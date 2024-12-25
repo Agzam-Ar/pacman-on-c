@@ -93,11 +93,11 @@ int main() {
     while (map->food > 0 && Input.exit <= 0) {
         adjustWindowSize();
 
-       /* for (int y = 0; y < height; y++) {
+        for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 setBackground(canvas, Color.black, x, y);
             }
-        }*/
+        }
 
         updatePlayer(&player, canvas, map);
         ghostReloadMs += 1000 / tps;
@@ -111,8 +111,16 @@ int main() {
         }
         int score = map->score;
         for (int x = 0; score > 0; x++) {
-            setChars(canvas, u'0' + score%10, u' ', 6 - x, 1);
+            setChars(canvas, u'0' + score % 10, u' ', 6 - x, 1);
             score /= 10;
+        }
+
+        if (Input.debug) {
+            score = map->time;
+            for (int x = 0; score > 0; x++) {
+                setChars(canvas, u'0' + score % 10, u' ', 6 - x, 2);
+                score /= 10;
+            }
         }
 
         flushCanvas(canvas);

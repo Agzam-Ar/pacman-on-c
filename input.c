@@ -17,6 +17,7 @@ void handleKeys() {
     if (key == 's' || key == 'k' || key == 'ы' || key == 'л') { Input.x = 0; Input.y = +1; }
     if (key == 'w' || key == 'i' || key == 'ц' || key == 'ш') { Input.x = 0; Input.y = -1; }
     if (key == 'e') { Input.exit = 1; }
+    if (key == 't') { Input.debug = !Input.debug; }
 }
 
 static void* keylistener(void* arg) {
@@ -29,5 +30,6 @@ void setupKeyboard() {
     Input.x = 0;
     Input.y = 0;
     Input.exit = 0;
+    Input.debug = 0;
     int tid = _beginthread(&keylistener, 4096, 0);
 }

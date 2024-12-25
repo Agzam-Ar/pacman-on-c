@@ -2,6 +2,7 @@
 #include "player.h"
 #include "canvas.h"
 #include "map.h"
+#include "input.h"
 #include <uchar.h>
 #include <stdlib.h>
 
@@ -9,7 +10,7 @@
 
 void drawTile(Canvas* canvas, Map* map, int x, int y);
 
-static isChase(Map* map) {
+static char isChase(Map* map) {
 	int time = map->time;
 	if (time < 7) return 0;
 	if (time < 27) return 1;
@@ -25,16 +26,31 @@ static isChase(Map* map) {
 }
 
 static blinkyTarget(Player* player, Map* map, int* tx, int* ty) {
+	if (!isChase(map)) {
+		*tx = map->w - 3;
+		*ty = 0;
+		return;
+	}
 	*tx = player->x;
 	*ty = player->y;
 }
 
 static pinkyTarget(Player* player, Map* map, int* tx, int* ty) {
+	if (!isChase(map)) {
+		*tx = 2;
+		*ty = 0;
+		return;
+	}
 	*tx = player->x + player->vx * 4;
 	*ty = player->y + player->vy * 4;
 }
 
 static inkyTarget(Player* player, Map* map, int* tx, int* ty) {
+	if (!isChase(map)) {
+		*tx = map->w-1;
+		*ty = map->h-1;
+		return;
+	}
 	int food = map->maxFood - map->food;
 	if (food >= 30) {
 		int vx = player->x + player->vx * 2;
@@ -54,6 +70,11 @@ static inkyTarget(Player* player, Map* map, int* tx, int* ty) {
 }
 
 static clydeTarget(Player* player, Map* map, int* tx, int* ty) {
+	if (!isChase(map)) {
+		*tx = 0;
+		*ty = map->h - 1;
+		return;
+	}
 	int food = map->maxFood - map->food;
 	if (food >= map->maxFood/3) {
 		int dx = player->x - clyde.x;
@@ -79,11 +100,6 @@ void loadGhosts() {
 	pinky.color = Color.pink;
 	inky.color = Color.cyan;
 	clyde.color = Color.orange;
-
-	blinky.bcolor = Color.red;
-	pinky.bcolor = Color.pink;
-	inky.bcolor = Color.cyan;
-	clyde.bcolor = Color.orange;
 
 	blinky.getTarget = &blinkyTarget;
 	pinky.getTarget = &pinkyTarget;
@@ -141,6 +157,7 @@ void updateGhost(Ghost* ghost, Player* player, Canvas* canvas, Map* map) {
 	drawTile(canvas, map, ghost->x, ghost->y);
 	setChars(canvas, u' ', u'&', x, y);
 	setForeground(canvas, ghost->color, x, y);
+	if(Input.debug) setBackground(canvas, ghost->color, tx, ty);
 
 	ghost->lx = ghost->x;
 	ghost->ly = ghost->y;

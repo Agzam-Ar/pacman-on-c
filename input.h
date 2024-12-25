@@ -4,6 +4,7 @@ typedef struct KeyboardState {
     int x;
     int y;
     int exit;
+    int debug;
 } KeyboardState;
 
 

@@ -12,7 +12,6 @@ typedef struct Ghost {
     int ly;
     void (*getTarget)(Player*, Map*, int* x, int* y);
     int color;
-    int bcolor;
 
     char atHome;
 
