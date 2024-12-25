@@ -37,18 +37,22 @@ void updatePlayer(Player* player, Canvas* canvas, Map* map) {
     x += vx;
     y += vy;
 
+    x =((x % map->w) + map->w)% map->w;
+
     t = getTile(map, x, y);
     if (t->solid) return;
 
     if (t->food > 0) {
         map->food--;
         t->food = 0;
+        map->score += player->hp;
     }
     setChar(canvas, u' ', player->x, player->y);
 
 
-    setChars(canvas, u' ', u'P', x, y);
-    setForeground(canvas, Foreground.yellow, x, y);
+    setChars(canvas, u' ', u'@', x, y);
+    setForeground(canvas, Color.yellow, x, y);
+    //setBackground(canvas, Color.yellow, x, y);
 
     player->x = x;
     player->y = y;

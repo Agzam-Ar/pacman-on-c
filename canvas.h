@@ -7,32 +7,37 @@ typedef struct Canvas {
 
     char16_t* buffer1;
     char16_t* buffer2;
-    char* background;
-    char* foreground;
+    int* background;
+    int* foreground;
     char* updated;
 
 } Canvas;
 
 typedef struct Colors {
-    char black;
-    char red;
-    char green;
-    char yellow;
-    char blue;
-    char magenta;
-    char cyan;
-    char white;
-    char bblack;
-    char bred;
-    char bgreen;
-    char byellow;
-    char bblue;
-    char bmagenta;
-    char bcyan;
-    char bwhite;
+    int black;
+    int red;
+    int green;
+    int yellow;
+    int blue;
+    int magenta;
+    int cyan;
+    int white;
+    int bblack;
+    int bred;
+    int bgreen;
+    int byellow;
+    int bblue;
+    int bmagenta;
+    int bcyan;
+    int bwhite;
+
+    int orange;
+    int coral;
+    int pink;
+
 } Colors;
 
-Colors Foreground, Background;
+Colors Color; // Foreground, Background, 
 void moveCursor(int x, int y);
 void setChar(Canvas* canvas, char16_t c, int x, int y);
 void setChars(Canvas* canvas, char16_t c1, char16_t c2, int x, int y);

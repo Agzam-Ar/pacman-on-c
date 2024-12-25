@@ -6,45 +6,61 @@
 
 #include "canvas.h"
 
-Colors Foreground = {
-    .black = 30,
-    .red = 31,
-    .green = 32,
-    .yellow = 33,
-    .blue = 34,
-    .magenta = 35,
-    .cyan = 36,
-    .white = 37,
+//Colors Foreground = {
+//    .black = 30,
+//    .red = 31,
+//    .green = 32,
+//    .yellow = 33,
+//    .blue = 34,
+//    .magenta = 35,
+//    .cyan = 36,
+//    .white = 37,
+//
+//    .bblack = 90,
+//    .bred = 91,
+//    .bgreen = 92,
+//    .byellow = 93,
+//    .bblue = 94,
+//    .bmagenta = 95,
+//    .bcyan = 96,
+//    .bwhite = 97,
+//};
+//
+//Colors Background = {
+//
+//    .black = 40,
+//    .red = 41,
+//    .green = 42,
+//    .yellow = 43,
+//    .blue = 44,
+//    .magenta = 45,
+//    .cyan = 46,
+//    .white = 47,
+//
+//    .bblack = 100,
+//    .bred = 101,
+//    .bgreen = 102,
+//    .byellow = 103,
+//    .bblue = 104,
+//    .bmagenta = 105,
+//    .bcyan = 106,
+//    .bwhite = 107,
+//};
 
-    .bblack = 90,
-    .bred = 91,
-    .bgreen = 92,
-    .byellow = 93,
-    .bblue = 94,
-    .bmagenta = 95,
-    .bcyan = 96,
-    .bwhite = 97,
-};
+Colors Color = {
 
-Colors Background = {
+    .black = 0,
+    .white = 15,
 
-    .black = 40,
-    .red = 41,
-    .green = 42,
-    .yellow = 43,
-    .blue = 44,
-    .magenta = 45,
-    .cyan = 46,
-    .white = 47,
+    .red = 9,
+    .orange = 215,
+    .yellow = 226,
+    .blue = 21,
+    .cyan = 14,
 
-    .bblack = 100,
-    .bred = 101,
-    .bgreen = 102,
-    .byellow = 103,
-    .bblue = 104,
-    .bmagenta = 105,
-    .bcyan = 106,
-    .bwhite = 107,
+    .coral = 221,
+    .pink = 219,
+
 };
 
 void moveCursor(int x, int y) {
@@ -78,8 +94,8 @@ Canvas* createCanvas(int w, int h) {
             buffer1[i] = u' ';
             buffer2[i] = u' ';
             updated[i] = 1;
-            background[i * 9] = Background.black;
-            foreground[i * 9] = Foreground.white;
+            background[i * 9] = Color.black;
+            foreground[i * 9] = Color.white;
             printf("\x1b[0m%lc%lc", u' ', u' ');
         }
         printf("\u2503%lc", u'\n');
@@ -106,8 +122,22 @@ void flushCanvas(Canvas* canvas) {
             //printf("\x1b[0;%dm", canvas->foreground[x + y * ((canvas->w))]);
             //printf("\x1b[0;%dm", canvas->background[x + y * ((canvas->w))]);
             //printf("\x1b[0;%dm\x1b[0;%dm", canvas->foreground[x + y * ((canvas->w))], canvas->background[x + y * ((canvas->w))]);
-            printf("\x1b[0;%dm\x1b[%dm", canvas->foreground[x + y * ((canvas->w))], canvas->background[x + y * ((canvas->w))]);
-            printf("%lc%lc", canvas->buffer1[x + y * ((canvas->w))], canvas->buffer2[x + y * ((canvas->w))]);
+            //printf("\x1b[0;%dm\x1b[%dm", canvas->foreground[x + y * ((canvas->w))], canvas->background[x + y * ((canvas->w))]);
+            int pack = x + y * ((canvas->w));
+
+            //printf("\x1b[0;%dm\x1b[%dm", canvas->foreground[pack], canvas->background[pack]);
+
+
+            printf("\033[38;5;%dm", canvas->foreground[pack]);
+            printf("\033[48;5;%dm", canvas->background[pack]);
+
+            if (canvas->buffer1[pack] == u'━') printf("\033[38;5;%dm", Color.pink);
+
+            printf("%lc", canvas->buffer1[pack]);
+
+            if (canvas->buffer2[pack] == u'━') printf("\033[38;5;%dm", Color.pink);
+
+            printf("%lc", canvas->buffer2[pack]);
             canvas->updated[x + y * ((canvas->w))] = 0;
         }
     }
