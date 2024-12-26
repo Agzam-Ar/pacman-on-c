@@ -22,6 +22,9 @@ typedef struct Map {
 
     int score;
 
+    int bonus;
+    int combo;
+
 } Map;
 
 

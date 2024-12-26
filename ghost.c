@@ -111,10 +111,21 @@ void loadGhosts() {
 	pinky.atHome = 0;
 	inky.atHome = 1;
 	clyde.atHome = 1;
+
+	blinky.eyeMode = 0;
+	pinky.eyeMode = 0;
+	inky.eyeMode = 0;
+	clyde.eyeMode = 0;
+
+	ghosts[0] = &blinky;
+	ghosts[1] = &pinky;
+	ghosts[2] = &inky;
+	ghosts[3] = &clyde;
 }
 
 static int ix[4] = { 1,0,-1,0 };
 static int iy[4] = { 0,1,0,-1 };
+
 
 void updateGhost(Ghost* ghost, Player* player, Canvas* canvas, Map* map) {
 
@@ -123,18 +134,31 @@ void updateGhost(Ghost* ghost, Player* player, Canvas* canvas, Map* map) {
 
 	int tx = 0;
 	int ty = 0;
-	ghost->getTarget(player, map, &tx, &ty);
+	if (ghost->eyeMode > 0) {
+		tx = map->w / 2;
+		ty = map->h / 2 - 1;
+		if (x == tx && y == tx) {
+			ghost->eyeMode = 0;
+		}
+	} else if (map->bonus > 0) {
+		tx = player->x;
+		ty = player->y;
+	} else {
+		ghost->getTarget(player, map, &tx, &ty);
+	}
 
 	int dx = 0;
 	int dy = 0;
-	int minDst2 = 1000000;
+	int minDst2 = ghost->eyeMode ? 1000000 : map->bonus ? 0 : 1000000;
 
 	for (int i = 0; i < 4; i++) {
-		int rx = x + ix[i];
+		int rx = (x + ix[i])%map->w;
 		int ry = y + iy[i];
-		if(rx == ghost->lx && ry == ghost->ly) continue;
 		Tile* t = getTile(map, rx, ry);
-		if (ghost->atHome) {
+			if (rx == ghost->lx && ry == ghost->ly) continue;
+		if (ghost->eyeMode) {
+			if (t->solid && t->solid != 2) continue;
+		} else if (ghost->atHome) {
 			if (t->solid) continue;
 		} else {
 			if (t->solid && t->solid != 2) continue;
@@ -142,11 +166,19 @@ void updateGhost(Ghost* ghost, Player* player, Canvas* canvas, Map* map) {
 		int dstx = tx-rx;
 		int dsty = ty-ry;
 		int dst2 = dstx * dstx + dsty * dsty;
-		dst2 += t->solid*10;
-		if (dst2 < minDst2) {
-			minDst2 = dst2;
-			dx = ix[i];
-			dy = iy[i];
+		if(!ghost->eyeMode) dst2 += t->solid*10;
+		if (map->bonus && !ghost->eyeMode) {
+			if (dst2 > minDst2) {
+				minDst2 = dst2;
+				dx = ix[i];
+				dy = iy[i];
+			}
+		} else {
+			if (dst2 < minDst2) {
+				minDst2 = dst2;
+				dx = ix[i];
+				dy = iy[i];
+			}
 		}
 	}
 
@@ -155,8 +187,8 @@ void updateGhost(Ghost* ghost, Player* player, Canvas* canvas, Map* map) {
 	y += dy;
 
 	drawTile(canvas, map, ghost->x, ghost->y);
-	setChars(canvas, u' ', u'&', x, y);
-	setForeground(canvas, ghost->color, x, y);
+	setChars(canvas, u' ', ghost->eyeMode ? u'"' : u'&', x, y);
+	setForeground(canvas, (map->bonus > 0 || ghost->eyeMode) ? Color.white : ghost->color, x, y);
 	if(Input.debug) setBackground(canvas, ghost->color, tx, ty);
 
 	ghost->lx = ghost->x;

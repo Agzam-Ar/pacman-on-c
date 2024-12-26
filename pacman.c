@@ -86,6 +86,7 @@ int main() {
     int time = 0;
 
     map->time = 0;
+    map->combo = 0;
 
     int ghostReloadMs = 0;
     int ghostSpeedMs = 1500 / tps;
@@ -121,10 +122,35 @@ int main() {
                 setChars(canvas, u'0' + score % 10, u' ', 6 - x, 2);
                 score /= 10;
             }
+
+            score = map->bonus;
+            for (int x = 0; score > 0; x++) {
+                setChars(canvas, u'0' + score % 10, u' ', 12 - x, 2);
+                score /= 10;
+            }
         }
+
+        for (int i = 0; i < 4; i++) {
+            Ghost* ghost = ghosts[i];
+            if (!ghost->eyeMode && ghost->x == player.x && ghost->y == player.y) {
+                if (map->bonus > 0) {
+                    ghost->eyeMode = 1;
+                    map->combo++;
+                    map->score += map->combo * 1000;
+                }
+            }
+        }
+
 
         flushCanvas(canvas);
         Sleep(1000 / tps);
+        if (map->bonus > 0) {
+            map->bonus -= 1000 / tps;
+        } else if (map->bonus < 0) {
+            map->bonus = 0;
+            map->combo = 0;
+        }
+
         ticksBeforeSec++;
         if (ticksBeforeSec == tps) {
             ticksBeforeSec = 0;
@@ -135,6 +161,12 @@ int main() {
     if (Input.exit <= 0) {
        for (int i = 0; i < 8; i++) {
             drawMap(canvas, width, height, i%2 ? Color.white : Color.blue, 0);
+            int score = map->score;
+            for (int x = 0; score > 0; x++) {
+                setChars(canvas, u'0' + score % 10, u' ', 6 - x, 1);
+                //setChars(canvas, u'0' + score % 10, u' ', map->w / 2 + 2 - x, map->h/2-1);
+                score /= 10;
+            }
             flushCanvas(canvas);
             Sleep(10);
         }

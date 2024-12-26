@@ -15,10 +15,13 @@ typedef struct Ghost {
 
     char atHome;
 
+    char eyeMode;
+
 } Ghost;
 
 
 Ghost blinky, pinky, inky, clyde;
+Ghost* ghosts[4];
 
 void loadGhosts();
 void updateGhost(Ghost* ghost, Player* player, Canvas* canvas, Map* map);

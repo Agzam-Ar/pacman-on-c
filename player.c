@@ -43,6 +43,9 @@ void updatePlayer(Player* player, Canvas* canvas, Map* map) {
     if (t->solid) return;
 
     if (t->food > 0) {
+        if (t->food > 1) {
+            map->bonus = 8000;
+        }
         map->food--;
         t->food = 0;
         map->score += player->hp;
